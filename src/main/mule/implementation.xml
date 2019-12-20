@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="15417f09-e9b8-40de-b01e-80f0d2e32207" >
+		<db:mssql-connection host="DESKTOP-BSJOOPT" user="sa" password="Anirudh16" databaseName="ContactsDB" />
+	</db:config>
+	<flow name="post_implementation_flow" doc:id="0b941160-5098-4e3e-8295-300d297e7c4a" >
+		<db:insert doc:name="Insert" doc:id="9a3f06a8-7192-4409-8fb8-eba62b5dc815" config-ref="Database_Config" autoGenerateKeys="true" target="result" targetValue="#[message]">
+			<db:sql >INSERT INTO [dbo].[MEMBER](FIRST_NAME,Last_Name,DOB,GENDER,TITLE)VALUES(:fname,:lname,:dob,:gender,:role)</db:sql>
+			<db:input-parameters ><![CDATA[#[{'fname':payload.first_name,'lname':payload.last_name,'dob':payload.date_birth,'gender':payload.gender,'role':payload.role}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="cc58a63c-bf04-4087-90b0-86926570e1a4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+ id : vars.result.payload.generatedKeys[0],
+ first_name : payload.first_name,
+ last_name : payload.last_name,
+ date_birth: payload.date_birth,
+ gender: payload.gender,
+ role: payload.role
+ 
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="88b44476-baf7-4093-a8bd-d68e5eac325b" message="#[payload]" />
+	</flow>
+	<flow name="get_all_members_implementation" doc:id="c3f3047e-ce42-4a96-89d7-1e5e7c62f02f" >
+		<db:select doc:name="Select" doc:id="d8bcb669-8123-45d9-9ca7-14e2b95eb0f4" config-ref="Database_Config">
+			<db:sql >Select * from [dbo].[MEMBER]</db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="Logger" doc:id="522227f1-0d73-4011-94d0-f382cb4f5ba7" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="9f60c0ff-bdc8-4e93-bddd-1a297284a570" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map {
+	id : $.MEMBER_ID,
+	first_name : $.FIRST_NAME,
+	last_name : $.Last_Name,
+	date_birth : $.DOB,
+	gender : $.GENDER,
+	role : $.TITLE
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="get_membersby_id_implementation" doc:id="d7e611f8-3b92-4dac-8edd-8b2a44bf60e5" >
+		<db:select doc:name="Select" doc:id="954d8874-4caa-44b7-b367-8b9171892475" config-ref="Database_Config">
+			<db:sql >Select * from member where MEMBER_ID = :ID</db:sql>
+			<db:input-parameters ><![CDATA[#[{'ID' : attributes.uriParams.ID}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="8d29f5e0-80be-4b52-96ed-cf5770e45ff6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map {
+	id : $.MEMBER_ID,
+	first_name : $.FIRST_NAME,
+	last_name : $.Last_Name,
+	date_birth : $.DOB,
+	gender : $.GENDER,
+	role : $.TITLE
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="patch_update_member_implementation" doc:id="64789090-3480-4b60-a526-a7d71860b189" >
+		<db:update doc:name="Update" doc:id="0d10daf0-aeb3-40ae-b382-6e6ce099378f" config-ref="Database_Config">
+			<db:sql >Update MEMBER 
+set 
+FIRST_NAME = :fname,
+Last_Name = :lname,
+DOB = :dob,
+GENDER = :gender,
+TITLE = :role
+Where  MEMBER_ID = :id</db:sql>
+			<db:input-parameters ><![CDATA[#[{'id':payload.id,'fname':payload.first_name,'lname':payload.last_name,'dob':payload.date_birth,'gender':payload.gender,'role':payload.role}]]]></db:input-parameters>
+		</db:update>
+	</flow>
+	<flow name="delete_member_implementationFlow" doc:id="749449d4-f1d3-4c8e-b87b-a5c90add5800" >
+		<db:delete doc:name="Delete" doc:id="93213d52-1464-452c-9992-e02a58ac0f58" config-ref="Database_Config">
+			<db:sql >DELETE FROM  MEMBER Where  MEMBER_ID = :ID</db:sql>
+			<db:input-parameters ><![CDATA[#[{'ID' : attributes.uriParams.ID}]]]></db:input-parameters>
+		</db:delete>
+	</flow>
+</mule>

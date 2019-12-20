@@ -1,0 +1,109 @@
+#%RAML 1.0
+version: 1.0
+title: member-api
+types:
+  member: !include member-datatype.raml
+  member_no_id: !include member-no-id-datatype.raml
+
+/member:
+  get:
+    responses:
+        200:
+          body:
+            application/json:
+              type: member[]
+              examples:
+                output: !include examples/member-examples.raml
+        404:
+          body:
+            application/json:
+              example:
+                message: Service not found
+        500:
+          body:
+            application/json:
+              example:
+                message: Internal Server error
+  post:
+    body:
+      application/json:
+        type: member_no_id
+        examples:
+          input:  !include examples/member-no-id-example.raml
+    responses:
+      201:
+        body:
+          application/json:
+            type: member
+            examples:
+              output : !include examples/member-example.raml
+      404:
+          body:
+            application/json:
+              example:
+                message: Service not found
+      500:
+          body:
+            application/json:
+              example:
+                message: Internal Server error
+
+  patch:
+    body:
+      application/json:
+        type: member
+        examples:
+          input:  !include examples/member-example.raml
+    responses:
+      201:
+        body:
+          application/json:
+            type: member
+            examples:
+              output : !include examples/member-example.raml
+      404:
+          body:
+            application/json:
+              example:
+                message: Service not found
+      500:
+          body:
+            application/json:
+              example:
+                message: Internal Server error
+  /{ID}:
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              type: member
+              examples:
+                output: !include examples/member-example.raml
+        404:
+          body:
+            application/json:
+              example:
+                message: Service not found
+        500:
+          body:
+            application/json:
+              example:
+                message: Internal Server error      
+    delete:
+      responses:
+        201:
+          body:
+            application/json:
+              example:
+                message: Member deleted successfully
+        404:
+          body:
+            application/json:
+              example:
+                message: Service not found
+        500:
+          body:
+            application/json:
+              example:
+                message: Internal Server error

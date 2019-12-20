@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="member" format="json">
+      <types:shape format="weave" example="examples/members.json"><![CDATA[%dw 2.0
+
+type member = Array<{|  id: Number {"typeId": "int"},   first_name: String,   last_name: String,   date_birth: String,   gender: String,   role: String|}> {"example": "[{\"id\":4,\"first_name\":\"Akhilesh\",\"last_name\":\"Vajrala\",\"date_birth\":\"2015-05-23\",\"gender\":\"Female\",\"role\":\"Program Director\"},{\"id\":4,\"first_name\":\"Akhilesh\",\"last_name\":\"Vajrala\",\"date_birth\":\"2015-05-23\",\"gender\":\"Female\",\"role\":\"Program Director\"},{\"id\":4,\"first_name\":\"Akhilesh\",\"last_name\":\"Vajrala\",\"date_birth\":\"2015-05-23\",\"gender\":\"Female\",\"role\":\"Program Director\"},{\"id\":4,\"first_name\":\"Akhilesh\",\"last_name\":\"Vajrala\",\"date_birth\":\"2015-05-23\",\"gender\":\"Female\",\"role\":\"Program Director\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#cc58a63c-bf04-4087-90b0-86926570e1a4">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="member"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
