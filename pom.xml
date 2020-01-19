@@ -33,6 +33,36 @@
                     </sharedLibraries>
                 </configuration>
             </plugin>
+			<plugin>
+  				<groupId>org.mule.tools.maven</groupId>
+  				<artifactId>mule-maven-plugin</artifactId>
+  				<version>3.3.2</version>
+  				<extensions>true</extensions>
+  				<configuration>
+    				<cloudHubDeployment>
+      					<muleVersion>4.2.0</muleVersion>
+      					<username>rvajrala6</username>
+      					<password>Anirudh2008</password>
+      					<environment>Sandbox</environment>
+      					<workerType>Micro</workerType>
+      					<workers>1</workers>
+      					<uri>https://anypoint.mulesoft.com</uri>
+      					<applicationName>2a-memberapi</applicationName>
+      					 <properties>
+        					<env>dev</env>
+      					 </properties>
+					</cloudHubDeployment>
+  				</configuration>
+  				<executions>
+  					<execution>
+    					<id>deploy</id>
+    					<phase>deploy</phase>
+    					<goals>
+      						<goal>deploy</goal>
+    					</goals>
+  					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
